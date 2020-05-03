@@ -29,6 +29,7 @@ public:
     int accountId;
     QString name;
     QString alias;
+    QString normalAlias;
     QString status;
     QString icon;
 

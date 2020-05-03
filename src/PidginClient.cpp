@@ -30,6 +30,25 @@ const char *const PIDGIN_PATH = "/im/pidgin/purple/PurpleObject";
 const char *const PIDGIN_INTERFACE = "im.pidgin.purple.PurpleInterface";
 
 typedef QList<int> IntList;
+
+typedef std::pair<QChar, const char *> SPair;
+
+const QMap<QChar, const char *> DIACRITIC_MAP(
+    {SPair(u'Š', "S"), SPair(u'Œ', "OE"), SPair(u'Ž', "Z"), SPair(u'š', "s"),
+     SPair(u'œ', "oe"), SPair(u'ž', "z"), SPair(u'Ÿ', "Y"), SPair(u'¥', "Y"), SPair(u'µ', "u"),
+     SPair(u'À', "A"), SPair(u'Á', "A"), SPair(u'Â', "A"), SPair(u'Ã', "A"), SPair(u'Ä', "A"),
+     SPair(u'Å', "A"), SPair(u'Æ', "AE"), SPair(u'Ç', "C"), SPair(u'È', "E"), SPair(u'É', "E"),
+     SPair(u'Ê', "E"), SPair(u'Ë', "E"), SPair(u'Ì', "I"), SPair(u'Í', "I"), SPair(u'Î', "I"),
+     SPair(u'Ï', "I"), SPair(u'Ð', "D"), SPair(u'Ñ', "N"), SPair(u'Ò', "O"), SPair(u'Ó', "O"),
+     SPair(u'Ô', "O"), SPair(u'Õ', "O"), SPair(u'Ö', "O"), SPair(u'Ø', "O"), SPair(u'Ù', "U"),
+     SPair(u'Ú', "U"), SPair(u'Û', "U"), SPair(u'Ü', "U"), SPair(u'Ý', "Y"), SPair(u'ß', "s"),
+     SPair(u'à', "a"), SPair(u'á', "a"), SPair(u'â', "a"), SPair(u'ã', "a"), SPair(u'ä', "a"),
+     SPair(u'å', "a"), SPair(u'æ', "ae"), SPair(u'ç', "c"), SPair(u'è', "e"), SPair(u'é', "e"),
+     SPair(u'ê', "e"), SPair(u'ë', "e"), SPair(u'ì', "i"), SPair(u'í', "i"), SPair(u'î', "i"),
+     SPair(u'ï', "i"), SPair(u'ð', "o"), SPair(u'ñ', "n"), SPair(u'ò', "o"), SPair(u'ó', "o"),
+     SPair(u'ô', "o"), SPair(u'õ', "o"), SPair(u'ö', "o"), SPair(u'ø', "o"), SPair(u'ù', "u"),
+     SPair(u'ú', "u"), SPair(u'û', "u"), SPair(u'ü', "u"), SPair(u'ý', "y"), SPair(u'ÿ', "y")}
+);
 }
 
 PidginClient::PidginClient()
@@ -77,6 +96,23 @@ void PidginClient::addBuddy(int buddyId, int accountId)
     updateStatus(buddyId);
 }
 
+QString removeAccents(const QString &s)
+{
+    QString output;
+    output.reserve(s.size());
+    for (auto c : s) {
+        const char *replacement = DIACRITIC_MAP.value(c, nullptr);
+        if (replacement == nullptr) {
+            output.append(c);
+        }
+        else {
+            output.append(replacement);
+        }
+    }
+
+    return output;
+}
+
 void PidginClient::updateAlias(int buddyId)
 {
     QString alias = call<QString>("PurpleBuddyGetAlias", buddyId);
@@ -85,6 +121,7 @@ void PidginClient::updateAlias(int buddyId)
         return;
     }
     buddy->alias = alias;
+    buddy->normalAlias = removeAccents(alias).toLower();
 }
 
 PidginClient::~PidginClient() = default;
@@ -148,8 +185,10 @@ QList<std::shared_ptr<Buddy>> PidginClient::search(const QString &alias)
 
     QList<std::shared_ptr<Buddy>> filtered;
 
+    const QString &normalAlias = removeAccents(alias).toLower();
+
     for (auto &buddy : blist) {
-        if (buddy->alias.contains(alias, Qt::CaseInsensitive)) {
+        if (buddy->normalAlias.contains(normalAlias)) {
             filtered.append(buddy);
         }
     }
