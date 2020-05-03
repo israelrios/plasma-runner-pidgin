@@ -40,6 +40,10 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(0);
             }
             if (param.contains("--startChat")) {
+                // first test invalid buddyId
+                p.startChat(9999);
+
+                // now find the first one with the pattern supplied
                 QString pattern = QCoreApplication::arguments().at(2);
                 auto buddy = p.search(pattern).first();
                 p.startChat(buddy->id);

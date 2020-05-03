@@ -80,10 +80,10 @@ void PidginClient::addBuddy(int buddyId, int accountId)
 void PidginClient::updateAlias(int buddyId)
 {
     QString alias = call<QString>("PurpleBuddyGetAlias", buddyId);
-    if (alias.isEmpty()) {
+    auto buddy = buddies.value(buddyId);
+    if (alias.isEmpty() || !buddy) {
         return;
     }
-    auto buddy = this->buddies[buddyId];
     buddy->alias = alias;
 }
 
@@ -91,12 +91,16 @@ PidginClient::~PidginClient() = default;
 
 void PidginClient::updateStatus(int buddyId)
 {
+    auto buddy = buddies.value(buddyId);
+
+    if (!buddy) {
+        return;
+    }
+
     int presence = call<int>("PurpleBuddyGetPresence", buddyId);
     int isOnline = call<int>("PurplePresenceIsOnline", presence);
     int isAvailable = call<int>("PurplePresenceIsAvailable", presence);
     int isIdle = call<int>("PurplePresenceIsIdle", presence);
-
-    auto buddy = buddies[buddyId];
 
     if (isOnline) {
         if (isIdle || !isAvailable) {
@@ -116,9 +120,11 @@ void PidginClient::updateStatus(int buddyId)
 
 void PidginClient::startChat(int buddyId)
 {
-    auto buddy = buddies.value(buddyId, nullptr);
+    QMutexLocker ml(&mutex);
 
-    if (buddy == nullptr) {
+    auto buddy = buddies.value(buddyId);
+
+    if (!buddy) {
         return;
     }
 
@@ -171,6 +177,7 @@ void PidginClient::buddySignedOnOff(int buddyId)
 void PidginClient::buddyAdded(int buddyId)
 {
     QMutexLocker ml(&mutex);
+
     int accountId = call<int>("PurpleBuddyGetAccount", buddyId);
     addBuddy(buddyId, accountId);
 }
