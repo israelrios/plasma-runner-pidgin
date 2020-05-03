@@ -29,7 +29,7 @@ class PidginRunner: public Plasma::AbstractRunner
 
 Q_OBJECT;
 private:
-    PidginClient pidgin_d;
+    PidginClient pidginClient;
 
 public:
     PidginRunner(QObject *parent, const QVariantList &args);

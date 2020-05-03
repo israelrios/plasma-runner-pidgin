@@ -20,7 +20,6 @@
 #ifndef PIDGINCLIENT_H
 #define PIDGINCLIENT_H
 
-#include <QObject>
 #include <QVariant>
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -35,7 +34,7 @@ class PidginClient: public QObject
 {
 Q_OBJECT;
 private:
-    QDBusInterface pidgin_d;
+    QDBusInterface pidginInterface;
     QMutex mutex;
     QMap<int, std::shared_ptr<Buddy>> buddies;
     void updateStatus(int);
@@ -52,8 +51,8 @@ private:
            const QVariant &arg3 = QVariant())
     {
         T ret = T();
-        if (pidgin_d.isValid()) {
-            QDBusReply<T> reply = pidgin_d.call(methodName, arg1, arg2, arg3);
+        if (pidginInterface.isValid()) {
+            QDBusReply<T> reply = pidginInterface.call(methodName, arg1, arg2, arg3);
             if (reply.isValid()) {
                 ret = reply.value();
             }

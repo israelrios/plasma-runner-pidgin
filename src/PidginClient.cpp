@@ -34,7 +34,7 @@ typedef QList<int> IntList;
 
 PidginClient::PidginClient()
     :
-    pidgin_d(PIDGIN_SERVICE, PIDGIN_PATH, PIDGIN_INTERFACE)
+    pidginInterface(PIDGIN_SERVICE, PIDGIN_PATH, PIDGIN_INTERFACE)
 {
     QMutexLocker ml(&mutex);
 
@@ -64,7 +64,7 @@ void PidginClient::addBuddies(const int &accountId)
 
 void PidginClient::addListener(const char *signalName, const char *slot)
 {
-    pidgin_d.connection().connect(PIDGIN_SERVICE, PIDGIN_PATH, PIDGIN_INTERFACE, signalName, this, slot);
+    pidginInterface.connection().connect(PIDGIN_SERVICE, PIDGIN_PATH, PIDGIN_INTERFACE, signalName, this, slot);
 }
 
 void PidginClient::addBuddy(int buddyId, int accountId)
@@ -127,7 +127,7 @@ void PidginClient::startChat(int buddyId)
                            buddy->accountId,
                            buddy->name);
 
-    pidgin_d.call("PurpleConversationPresent", convId);
+    pidginInterface.call("PurpleConversationPresent", convId);
 }
 
 QList<std::shared_ptr<Buddy>> PidginClient::search(const QString &alias)

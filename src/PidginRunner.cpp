@@ -40,7 +40,7 @@ PidginRunner::match(Plasma::RunnerContext &context)
     if (!query.isEmpty()) {
 
         // filters all buddies from pidgin
-        QList<std::shared_ptr<Buddy>> buddies = pidgin_d.search(query);
+        QList<std::shared_ptr<Buddy>> buddies = pidginClient.search(query);
 
         QList<Plasma::QueryMatch> matches;
         matches.reserve(buddies.size());
@@ -68,7 +68,7 @@ void
 PidginRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match)
 {
     Q_UNUSED(context)
-    pidgin_d.startChat(match.data().toInt());
+    pidginClient.startChat(match.data().toInt());
 }
 
 K_EXPORT_PLASMA_RUNNER(pidgin_runner, PidginRunner)
