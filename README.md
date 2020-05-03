@@ -1,39 +1,21 @@
-# Plasma Runner 
+# Pidgin Krunner Plugin 
 
-I really liked this runner:
-http://kde-apps.org/content/show.php/PidginRunner?content=151998
+Krunner plugin that provides the list of buddies in Pidgin making it possible to start a conversation from Krunner.
 
-But It hasn't been updated or ported to KF5, so I did it. Many things 
-are still the same and I really liked what he did, So I forked it.
+Based on https://github.com/freexploit/plasma-runner-pidgin.
 
 
 ## Installation:
 
 
 ```sh
-git clone https://github.com/freexploit/plasma-runner-pidgin.git
-cd plasma-runner-pidgin
 mkdir build
 cd build
 cmake ../ \
 -DCMAKE_INSTALL_PREFIX=`kf5-config --prefix` \
--DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins` \
 -DCMAKE_BUILD_TYPE=Release
+make
+sudo make install
 ```
 
-Then just look for your contacts on runner.
-
-
-## Todo:
-
-- Fix images issue
-- Add actions
-- Create a plasmoid
-
-## Donations
-
-If you like my work, please donate:
-
-bitcoin: 1EHbghyyYkiQgw75H9oaUZtUoGmhGBQyk4
-
-zcash: t1eg8pXr4W3DxJr86XLgUrBbk3BMAXgCpm4
+Restart Krunner. Then check this plugin is enabled in Krunner settings. Your pidgin buddies should be searchable on Krunner.

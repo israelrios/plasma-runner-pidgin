@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2016 Christopher Valerio <christopher@valerio.guru>
+ *   Copyright (C) 2020 Israel Rios
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,29 +17,23 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PIDGINRUNNER_H
-#define PIDGINRUNNER_H
+#ifndef BUDDY_H
+#define BUDDY_H
 
-#include <KRunner/AbstractRunner>
-#include "pidgin_dbus.h"
+#include <QString>
 
-
-class PidginRunner: public Plasma::AbstractRunner
+class Buddy
 {
+public:
+    int id;
+    int accountId;
+    QString name;
+    QString alias;
+    QString status;
+    QString icon;
 
-    Q_OBJECT;
-    private:
-        PidginDbus pidgin_d;
-
-    public:
-        PidginRunner(QObject *parent, const QVariantList& args);
-        ~PidginRunner();
-    
-        void match(Plasma::RunnerContext &context);
-        void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match);
-
-
+    explicit Buddy(int id);
 };
 
-K_EXPORT_PLASMA_RUNNER(pidgin_runner, PidginRunner)
-#endif
+
+#endif //BUDDY_H
