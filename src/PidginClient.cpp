@@ -138,14 +138,17 @@ void PidginClient::updateStatus(int buddyId)
     int isOnline = call<int>("PurplePresenceIsOnline", presence);
 
     if (isOnline) {
-        int isAvailable = call<int>("PurplePresenceIsAvailable", presence);
-        if (isAvailable) {
+        if (call<int>("PurplePresenceIsIdle", presence)) {
+            buddy->status = "Away";
+            buddy->icon = "user-away";
+        }
+        else if (call<int>("PurplePresenceIsAvailable", presence)) {
             buddy->status = "Available";
             buddy->icon = "user-available";
         }
         else {
-            buddy->status = "Away";
-            buddy->icon = "user-away";
+            buddy->status = "Busy";
+            buddy->icon = "user-busy";
         }
     }
     else {
