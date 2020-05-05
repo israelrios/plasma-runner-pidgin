@@ -52,6 +52,8 @@ const QMap<QChar, const char *> DIACRITIC_MAP(
 
 const int PURPLE_STATUS_UNAVAILABLE = 3;
 
+#define qsl(str) QStringLiteral(str) /*NOLINT*/
+
 }
 
 PidginClient::PidginClient()
@@ -60,7 +62,7 @@ PidginClient::PidginClient()
 {
     QMutexLocker ml(&mutex);
 
-    IntList accounts = call<IntList>(QStringLiteral("PurpleAccountsGetAllActive"));
+    const IntList &accounts = call<IntList>(qsl("PurpleAccountsGetAllActive"));
 
     for (auto &accountId : accounts) {
         addBuddies(accountId);
@@ -78,7 +80,7 @@ PidginClient::PidginClient()
 
 void PidginClient::addBuddies(const int &accountId)
 {
-    IntList buddyIds = call<IntList>(QStringLiteral("PurpleFindBuddies"), accountId, "");
+    IntList buddyIds = call<IntList>(qsl("PurpleFindBuddies"), accountId, "");
     for (auto &buddyId : buddyIds) {
         addBuddy(buddyId, accountId);
     }
@@ -92,7 +94,7 @@ void PidginClient::addListener(const char *signalName, const char *slot)
 void PidginClient::addBuddy(int buddyId, int accountId)
 {
     auto buddy = std::make_shared<Buddy>(buddyId);
-    buddy->name = call<QString>(QStringLiteral("PurpleBuddyGetName"), buddyId);
+    buddy->name = call<QString>(qsl("PurpleBuddyGetName"), buddyId);
     buddy->accountId = accountId;
     buddies[buddyId] = buddy;
     updateAlias(buddyId);
@@ -118,7 +120,7 @@ QString removeAccents(const QString &s)
 
 void PidginClient::updateAlias(int buddyId)
 {
-    QString alias = call<QString>(QStringLiteral("PurpleBuddyGetAlias"), buddyId);
+    QString alias = call<QString>(qsl("PurpleBuddyGetAlias"), buddyId);
     auto buddy = buddies.value(buddyId);
     if (alias.isEmpty() || !buddy) {
         return;
@@ -137,30 +139,30 @@ void PidginClient::updateStatus(int buddyId)
         return;
     }
 
-    int presence = call<int>(QStringLiteral("PurpleBuddyGetPresence"), buddyId);
-    int isOnline = call<int>(QStringLiteral("PurplePresenceIsOnline"), presence);
+    int presence = call<int>(qsl("PurpleBuddyGetPresence"), buddyId);
+    int isOnline = call<int>(qsl("PurplePresenceIsOnline"), presence);
 
     if (isOnline) {
-        buddy->status = QStringLiteral("Away");
-        buddy->icon = QStringLiteral("user-away");
+        buddy->status = qsl("Away");
+        buddy->icon = qsl("user-away");
 
-        if (!call<int>(QStringLiteral("PurplePresenceIsIdle"), presence)) {
+        if (!call<int>(qsl("PurplePresenceIsIdle"), presence)) {
 
-            if (call<int>(QStringLiteral("PurplePresenceIsAvailable"), presence)) {
-                buddy->status = QStringLiteral("Available");
-                buddy->icon = QStringLiteral("user-available");
+            if (call<int>(qsl("PurplePresenceIsAvailable"), presence)) {
+                buddy->status = qsl("Available");
+                buddy->icon = qsl("user-available");
             }
-            else if (call<int>(QStringLiteral("PurplePresenceIsStatusPrimitiveActive"),
+            else if (call<int>(qsl("PurplePresenceIsStatusPrimitiveActive"),
                                presence,
                                PURPLE_STATUS_UNAVAILABLE)) {
-                buddy->status = QStringLiteral("Busy");
-                buddy->icon = QStringLiteral("user-busy");
+                buddy->status = qsl("Busy");
+                buddy->icon = qsl("user-busy");
             }
         }
     }
     else {
-        buddy->status = QStringLiteral("Offline");
-        buddy->icon = QStringLiteral("user-offline");
+        buddy->status = qsl("Offline");
+        buddy->icon = qsl("user-offline");
     }
 }
 
@@ -174,7 +176,7 @@ void PidginClient::startChat(int buddyId)
         return;
     }
 
-    int convId = call<int>(QStringLiteral("PurpleConversationNew"),
+    int convId = call<int>(qsl("PurpleConversationNew"),
                            1,
                            buddy->accountId,
                            buddy->name);
@@ -226,7 +228,7 @@ void PidginClient::buddyAdded(int buddyId)
 {
     QMutexLocker ml(&mutex);
 
-    int accountId = call<int>(QStringLiteral("PurpleBuddyGetAccount"), buddyId);
+    int accountId = call<int>(qsl("PurpleBuddyGetAccount"), buddyId);
     addBuddy(buddyId, accountId);
 }
 
