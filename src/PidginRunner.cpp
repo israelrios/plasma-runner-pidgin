@@ -21,20 +21,28 @@
 
 #include "PidginRunner.h"
 
+namespace
+{
+const QString CATEGORY = "Pidgin";
+
+const QString SHOW_BLIST = "Show Pidgin Buddies";
+
+const QString PIDGIN_ICON = "pidgin";
+
+const int SHOW_BLIST_ID = -1;
+}
+
 PidginRunner::PidginRunner(QObject *parent, const QVariantList &args)
     : Plasma::AbstractRunner(parent, args)
 {
     Q_UNUSED(args)
-    setObjectName("Pidgin Buddy Finder");
+    setObjectName(QLatin1String("Pidgin Buddy Finder"));
     setSpeed(AbstractRunner::NormalSpeed);
 }
 
 PidginRunner::~PidginRunner() = default;
 
-static const QString CATEGORY = "Pidgin";
-
-void
-PidginRunner::match(Plasma::RunnerContext &context)
+void PidginRunner::match(Plasma::RunnerContext &context)
 {
     QString query = context.query();
     if (!query.isEmpty()) {
@@ -52,23 +60,46 @@ PidginRunner::match(Plasma::RunnerContext &context)
             match.setData(buddy->id);
             match.setMatchCategory(CATEGORY);
             match.setIconName(buddy->icon);
+            defineMatchType(query, match, buddy->alias);
             matches.append(match);
-            if (query.compare(buddy->alias, Qt::CaseSensitivity::CaseInsensitive) == 0) {
-                match.setType(Plasma::QueryMatch::ExactMatch);
-            }
-            else {
-                match.setType(Plasma::QueryMatch::PossibleMatch);
-            }
         }
+
+        if (SHOW_BLIST.contains(query, Qt::CaseSensitivity::CaseInsensitive)) {
+            Plasma::QueryMatch match(this);
+            match.setText(SHOW_BLIST);
+            match.setData(SHOW_BLIST_ID);
+            match.setMatchCategory(CATEGORY);
+            match.setIconName(PIDGIN_ICON);
+            defineMatchType(query, match, SHOW_BLIST);
+            matches.append(match);
+        }
+
         context.addMatches(matches);
     }
 }
 
-void
-PidginRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match)
+void PidginRunner::defineMatchType(const QString &query, Plasma::QueryMatch &match, const QString &text)
+{
+    if (query.compare(text, Qt::CaseInsensitive) == 0) {
+        match.setType(Plasma::QueryMatch::ExactMatch);
+    }
+    else {
+        match.setType(Plasma::QueryMatch::PossibleMatch);
+    }
+}
+
+void PidginRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match)
 {
     Q_UNUSED(context)
-    pidginClient.startChat(match.data().toInt());
+
+    int id = match.data().toInt();
+
+    if (id == SHOW_BLIST_ID) {
+        pidginClient.showBuddiesList();
+    }
+    else {
+        pidginClient.startChat(id);
+    }
 }
 
 K_EXPORT_PLASMA_RUNNER(pidgin_runner, PidginRunner)

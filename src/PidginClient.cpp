@@ -207,6 +207,11 @@ QList<std::shared_ptr<Buddy>> PidginClient::search(const QString &alias)
     return filtered;
 }
 
+void PidginClient::showBuddiesList()
+{
+    pidginInterface.call("PurpleBlistSetVisible", 1);
+}
+
 void PidginClient::buddyStatusChanged(int buddyId, int old_status, int status)
 {
     Q_UNUSED(old_status)

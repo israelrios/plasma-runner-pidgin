@@ -26,10 +26,10 @@
 
 class PidginRunner: public Plasma::AbstractRunner
 {
-
 Q_OBJECT;
 private:
     PidginClient pidginClient;
+    static void defineMatchType(const QString &query, Plasma::QueryMatch &match, const QString &text);
 
 public:
     PidginRunner(QObject *parent, const QVariantList &args);

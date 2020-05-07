@@ -71,6 +71,7 @@ public:
     ~PidginClient() override;
     void startChat(int buddyId);
     QList<std::shared_ptr<Buddy>> search(const QString &alias);
+    void showBuddiesList();
 
 public slots:
     void buddyStatusChanged(int buddyId, int old_status, int status);
