@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(PidginRunner)
+cmake_minimum_required(VERSION 3.0.0)
+
+cmake_policy(SET CMP0063 NEW)
+cmake_policy(SET CMP0048 NEW)
+
+project(plasma-runner-pidgin VERSION 1.0.0)
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     # default build type
